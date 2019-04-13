@@ -13,13 +13,22 @@
       />
   </head>
   <body>
+    <div class="home-button">
+      <a href="https://people.eecs.ku.edu/~t819h638/Lab3_Repo/index.html">Back Home</a>
+    </div>
     <div class="container">
       <div id="app">
-        {{ message }}
         <input v-model.number="numStops" type="number">
         <ul id="lab">
           <li v-for="item in filteredStops" :key="item.id">
-            {{ item.name }}
+            <div class="card" style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title">{{ item.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ item.description }}</h6>
+              <!--  <p class="card-text">{{ item.lat }}<br>{{ item.lon }}<br></p> -->
+                <p class="card-dist">{{ item.distance }}</p>
+              </div>
+            </div>
           </li>
         </ul>
       </div>
@@ -38,28 +47,49 @@
           const app = new Vue({
              el: '#app',
              data: {
-               message: 'Hello Vue!',
                stops: [],
-               numStops: 10
+               numStops: 10,
+               userLat: 0,
+               userLon: 0
              },
+
              mounted: function() {
                fetch('https://utils.pauliankline.com/stops.json')
                 .then(function(response){
-                  return response.json();
+                  return response.json()
                 })
 
                 .then(function(data){
                   data.forEach(function(bustop){
-                    app.stops.push(bustop);
+                    app.stops.push(bustop)
                   })
                 })
+                navigator.geolocation.watchPosition(function(position){
+                   app.userLat = position.coords.latitude,
+                   app.userLon = position.coords.longitude,
+                   app.distance2Stop()
+                 })
              },
+
              computed: {
                filteredStops: function (){
-                 return this.stops.slice( 0, this.numStops )
+                 //this.stops.sort(function(a, b) { a.distance - b.distance });
+                 return this.stops.sort((a, b) => ( a.distance - b.distance )).slice( 0, this.numStops )
+               }
+             },
+
+             methods: {
+               distance2Stop: function(){  //using the Haversine formula
+                 app.stops.forEach(function(bustop){
+                   let deltaLat = Math.abs( app.userLat - bustop.lat );
+                   let deltaLon = Math.abs( app.userLon - bustop.lon );
+                   let a = Math.pow( Math.sin(deltaLat / 2), 2 ) + Math.cos(bustop.lat) * Math.cos(app.userLat) * Math.pow( Math.sin(deltaLon / 2), 2);
+                   let c = 2 * Math.atan( Math.sqrt(a), Math.sqrt(1 - a));
+                   bustop.distance = (6371 * c).toFixed(2);
+                 })
                }
              }
-           });
+           })
     </script>
   </body>
 </html>
