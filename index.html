@@ -16,6 +16,9 @@
     <div class="home-button">
       <a href="https://people.eecs.ku.edu/~t819h638/Lab3_Repo/index.html">Back Home</a>
     </div>
+    <div class="Ex1-link" style="text-aligned:right-justified">
+      <a href="https://imgur.com/a/Z9yPA5C" target="_blank">Console.log Screenshot</a>
+    </div>
     <div class="container">
       <div id="app">
         <input v-model.number="numStops" type="number">
@@ -25,8 +28,7 @@
               <div class="card-body">
                 <h5 class="card-title">{{ item.name }}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">{{ item.description }}</h6>
-              <!--  <p class="card-text">{{ item.lat }}<br>{{ item.lon }}<br></p> -->
-                <p class="card-dist">{{ item.distance }}</p>
+                <p class="card-dist">Stop is {{ item.distance }} km away</p>
               </div>
             </div>
           </li>
