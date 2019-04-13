@@ -16,9 +16,10 @@
     <div class="container">
       <div id="app">
         {{ message }}
-        <ul id="example">
-          <li v-for="item in todos">
-            {{ item.text }}
+        <input v-model.number="numStops" type="number">
+        <ul id="lab">
+          <li v-for="item in filteredStops" :key="item.id">
+            {{ item.name }}
           </li>
         </ul>
       </div>
@@ -33,30 +34,32 @@
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin-"anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <script> fetch('https://utils.pauliankline.com/stops.json')
-                .then(function(response) {
-                  return response.json();
-                })
-                .then(function(myJson) {
-                  console.log(JSON.stringify(myJson));
-                });
-
+    <script>
           const app = new Vue({
              el: '#app',
              data: {
                message: 'Hello Vue!',
-               todos: [
-                 { text: 'step1' },
-                 { text: 'step2' },
-                 { text: 'step3' }
-               ],
                stops: [],
-               numStops: 10,
-             }
+               numStops: 10
+             },
+             mounted: function() {
+               fetch('https://utils.pauliankline.com/stops.json')
+                .then(function(response){
+                  return response.json();
+                })
+
+                .then(function(data){
+                  data.forEach(function(bustop){
+                    app.stops.push(bustop);
+                  })
+                })
+             },
              computed: {
-               filteredStops: function () {return this.stops.slice(0, this.numStops - 1)}
+               filteredStops: function (){
+                 return this.stops.slice( 0, this.numStops )
+               }
              }
-           })
+           });
     </script>
   </body>
 </html>
